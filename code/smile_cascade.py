@@ -67,7 +67,7 @@ while True:
       scaleFactor=1.1,
       minNeighbors=8,
       minSize=(100, 100),
-      flags=cv2.cv.CV_HAAR_SCALE_IMAGE
+      flags=cv2.CASCADE_SCALE_IMAGE
   )
 
   for (x, y, w, h) in faces:
@@ -79,7 +79,7 @@ while True:
         scaleFactor=1.8,
         minNeighbors=25,
         minSize=(25, 25),
-        flags=cv2.cv.CV_HAAR_SCALE_IMAGE
+        flags=cv2.CASCADE_SCALE_IMAGE
     )
 
     if(len(smile) > 0):
