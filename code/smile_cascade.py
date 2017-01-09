@@ -1,7 +1,6 @@
 from imutils.video import VideoStream
 from datetime import datetime
 import imutils
-import cv
 import cv2
 import numpy as np
 import sys
