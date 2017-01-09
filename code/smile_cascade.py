@@ -1,3 +1,6 @@
+from imutils.video import VideoStream
+from datetime import datetime
+import imutils
 import cv
 import cv2
 import numpy as np
@@ -7,18 +10,28 @@ import os
 import time
 import inspect
 
+
+# Configuration from MMM
 CONFIG = json.loads(sys.argv[1])
 
+# Computer vision lib files needed by OpenCV
 path_to_file = os.path.dirname(os.path.abspath(
     inspect.getfile(inspect.currentframe())))
-
 facePath = path_to_file + '/haarcascade_frontalface_default.xml'
 smilePath = path_to_file + '/haarcascade_smile.xml'
 faceCascade = cv2.CascadeClassifier(facePath)
 smileCascade = cv2.CascadeClassifier(smilePath)
 
+log_path = path_to_file + '/../log/'
+if not os.path.exists(log_path):
+  os.makedirs(log_path)
+
+# track smile time
+smileTime = 0
+
 
 def to_node(type, message):
+  # Send message to MMM
   # convert to json and print (node helper will read from stdout)
   try:
     print(json.dumps({type: message}))
@@ -28,30 +41,25 @@ def to_node(type, message):
   # communication
   sys.stdout.flush()
 
-to_node('test', CONFIG)
+
+# *************************************************************
+# Main function
+# *************************************************************
+
+# Start video stream
+vs = VideoStream(usePiCamera=CONFIG['usePiCam']).start()
+
+# allow the camera sensor to warmup
+time.sleep(2)
+to_node('camera_ready', True)
 
 
-def save_image(image):
-  # check the timestamp of last image
-  cv.SaveImage(path_to_file + '/webcam/' +
-               time.asctime() + '.jpg', image)
-
-
-cap = cv2.VideoCapture(0)
-# cap.set(3, 640)
-# cap.set(4, 480)
-
-if cap.isOpened():  # try to get the first frame
-  rval, frame = cap.read()
-else:
-  rval = False
-
-smileTime = 0
-
-while rval:
+while True:
+  # take a frame every second
   time.sleep(1)
 
-  ret, frame = cap.read()  # Capture frame-by-frame
+  # use VS instead of cv2.VideoCapture
+  frame = vs.read()
 
   gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
@@ -62,10 +70,8 @@ while rval:
       minSize=(100, 100),
       flags=cv2.cv.CV_HAAR_SCALE_IMAGE
   )
-  # ---- Draw a rectangle around the faces
 
   for (x, y, w, h) in faces:
-    # cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
     roi_gray = gray[y:y + h, x:x + w]
     roi_color = frame[y:y + h, x:x + w]
 
@@ -78,27 +84,19 @@ while rval:
     )
 
     if(len(smile) > 0):
-      if smileTime == (CONFIG['smileLength'] / 2):
-        save_image(cv.fromarray(frame))
-
       smileTime += 1
       to_node('result', smileTime)
-    # else:
-      # to_node('result', {'smiling': False})
 
-    # Set region of interest for smiles
-    # for (x, y, w, h) in smile:
-      # print "Found", len(smile), "smiles!"
-      # cv2.rectangle(roi_color, (x, y), (x + w, y + h), (255, 0, 0), 2)
-      # cv2.putText(roi_color, "SMILING", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 2, 155, 1)
+      # log the smile test with a selfie
+      if smileTime == (CONFIG['smileLength'] / 2):
+        cv2.imwrite(log_path + datetime.now().isoformat("T") + '.jpg', frame)
 
-  # cv2.cv.Flip(frame, None, 1)
-  # cv2.imshow('Smile Detector', frame)
   if cv2.waitKey(1) & 0xFF == ord('q'):
     break
 
   if smileTime >= CONFIG['smileLength']:
+    smileTime = 0
     break
 
-cap.release()
 cv2.destroyAllWindows()
+vs.stop()

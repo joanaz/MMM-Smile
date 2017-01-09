@@ -13,18 +13,17 @@ Module.register('MMM-Smile', {
     // recognition interval in ms, default to 8 hours
     interval: 8 * 60 * 60 * 1000,
     // smile time in seconds
-    smileLength: 5
+    smileLength: 5,
+    usePiCam: true
   },
 
   start: function() {
     Log.info('Starting module: ' + this.name);
     var self = this
-    this.message = "Time to smile~";
+    this.message = 'Starting smile test...'
+    this.gifUrl = ''
     this.clearDom = false
     this.progressBarWidth = 0
-    this.getGif()
-
-
     this.getSmileTestResult()
 
     setTimeout(function() {
@@ -36,14 +35,9 @@ Module.register('MMM-Smile', {
     return ["MMM-Smile.css"]
   },
 
-  getGif: function() {
-    Log.info("Getting gif.");
-
-    this.sendSocketNotification("GET_GIF", this.config);
-  },
-
   getSmileTestResult: function() {
     Log.info("Start smile test.");
+
     this.pythonStarted = false
     this.sendSocketNotification('START_TEST', this.config);
   },
@@ -53,6 +47,7 @@ Module.register('MMM-Smile', {
     var self = this
     if (notification === "GIF") {
       this.gifUrl = payload
+      this.message = "Time to smile~";
       this.updateDom()
     } else if (notification === "RESULT") {
       if (payload < this.config.smileLength) {
@@ -74,15 +69,15 @@ Module.register('MMM-Smile', {
   getDom: function() {
     wrapper = document.createElement("div");
     wrapper.className = 'thin large bright';
+    if (this.gitUrl != '') {
+      var img = document.createElement("img");
+      img.src = this.gifUrl
 
-    var img = document.createElement("img");
-    img.src = this.gifUrl
+      // image.width = this.config.imageSize.toString();
+      // image.height = this.config.imageSize.toString();
 
-    // image.width = this.config.imageSize.toString();
-    // image.height = this.config.imageSize.toString();
-
-    wrapper.appendChild(img);
-
+      wrapper.appendChild(img);
+    }
     var h = document.createElement("p")
     var t = document.createTextNode(this.message);
     h.appendChild(t)
