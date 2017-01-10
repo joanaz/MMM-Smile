@@ -76,7 +76,7 @@ while True:
   )
 
   for (x, y, w, h) in faces:
-    cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+    # cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
     roi_gray = gray[y:y + h, x:x + w]
     roi_color = frame[y:y + h, x:x + w]
 
@@ -96,7 +96,7 @@ while True:
       if smileTime == (CONFIG['smileLength'] / 2):
         cv2.imwrite(log_path + datetime.now().isoformat("T") + '.jpg', frame)
 
-  cv2.imshow('Smile Detector', frame)
+  # cv2.imshow('Smile Detector', frame)
   if cv2.waitKey(1) & 0xFF == ord('q'):
     break
 
