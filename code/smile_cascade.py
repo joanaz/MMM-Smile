@@ -60,6 +60,9 @@ while True:
 
   # use VS instead of cv2.VideoCapture
   frame = vs.read()
+  if(frame.empty()):
+    to_node('error', 'frame is empty')
+    break
 
   gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 

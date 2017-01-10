@@ -34,6 +34,10 @@ module.exports = NodeHelper.create({
       } else if (message.hasOwnProperty('result')) {
         console.log("[" + self.name + "] " + (message.result));
         self.sendSocketNotification('RESULT', message.result);
+      } else if (message.hasOwnProperty('error')) {
+        console.log("[" + self.name + "] " + (message.error));
+        self.restart = true
+          // self.sendSocketNotification('RESULT', message.result);
       } else {
         console.log("[" + self.name + "] " + message)
       }
@@ -42,7 +46,14 @@ module.exports = NodeHelper.create({
 
     pyshell.end(function(err) {
       if (err) throw err;
-      console.log("[" + self.name + "] " + 'finished running...');
+      if (self.restart) {
+        console.log("[" + self.name + "] " + 'restarting...');
+        setTimeout(function() {
+          self.python_start()
+        }, 30 * 1000);
+      } else {
+        console.log("[" + self.name + "] " + 'finished running...');
+      }
     });
   },
 
