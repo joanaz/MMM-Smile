@@ -14,7 +14,10 @@ Module.register('MMM-Smile', {
     interval: 8 * 60 * 60 * 1000,
     // smile time in seconds
     smileLength: 5,
-    usePiCam: true
+    // use pi camera by default
+    usePiCam: true,
+    // test running time in seconds
+    testRunTime: 60
   },
 
   start: function() {
@@ -45,30 +48,46 @@ Module.register('MMM-Smile', {
   // Override socket notification handler.
   socketNotificationReceived: function(notification, payload) {
     var self = this
+    var endTest = false
+
     if (notification === "GIF") {
       this.gifUrl = payload
       this.message = "Time to smile~";
       this.updateDom()
     } else if (notification === "RESULT") {
-      if (payload < this.config.smileLength) {
-        this.message = "Keep smiling~"
+      if (payload === -1) {
+        this.message = "Sorry, you didn't pass smile test."
+        endTest = true
       } else {
-        this.message = "Smile test complete!"
+        if (payload >= 0 && payload < this.config.smileLength) {
+          this.message = "Keep smiling~"
+        } else {
+          this.message = "Smile test passed!"
+          endTest = true
+        }
 
-        setTimeout(function() {
-          self.clearDom = true;
-          self.updateDom()
-        }, 1000);
+        this.progressBarWidth = Math.round(100 * payload / this.config.smileLength).toString() + "%";
       }
-
-      this.progressBarWidth = Math.round(100 * payload / this.config.smileLength).toString() + "%";
       this.updateDom()
+    }
+
+    if (endTest) {
+      setTimeout(function() {
+        self.clearDom = true;
+        self.updateDom()
+      }, 1000);
     }
   },
 
   getDom: function() {
     wrapper = document.createElement("div");
     wrapper.className = 'thin large bright';
+
+    var h = document.createElement("p")
+    var t = document.createTextNode(this.message);
+    h.appendChild(t)
+    wrapper.appendChild(h)
+
     if (this.gitUrl != '') {
       var img = document.createElement("img");
       img.src = this.gifUrl
@@ -78,10 +97,6 @@ Module.register('MMM-Smile', {
 
       wrapper.appendChild(img);
     }
-    var h = document.createElement("p")
-    var t = document.createTextNode(this.message);
-    h.appendChild(t)
-    wrapper.appendChild(h)
 
     progressBar = document.createElement("div")
     progressBar.id = "progress-bar"

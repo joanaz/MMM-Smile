@@ -25,9 +25,6 @@ log_path = path_to_file + '/../log/'
 if not os.path.exists(log_path):
   os.makedirs(log_path)
 
-# track smile time
-smileTime = 0
-
 
 def to_node(type, message):
   # Send message to MMM
@@ -46,12 +43,16 @@ def to_node(type, message):
 # *************************************************************
 
 # Start video stream
-vs = VideoStream(usePiCamera=CONFIG['usePiCam']).start()
+vs = VideoStream(usePiCamera=CONFIG['usePiCam'], framerate=1).start()
 
 # allow the camera sensor to warmup
 time.sleep(2)
 to_node('camera_ready', True)
 
+# track smile time
+smileTime = 0
+
+endtime = time.time() + CONFIG['testRunTime']
 
 while True:
   # take a frame every second
@@ -97,5 +98,9 @@ while True:
     smileTime = 0
     break
 
-cv2.destroyAllWindows()
+  if time.time() >= endtime:
+    to_node('result', -1)
+    break
+
 vs.stop()
+cv2.destroyAllWindows()
