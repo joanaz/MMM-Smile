@@ -43,7 +43,7 @@ def to_node(type, message):
 # *************************************************************
 
 # Start video stream
-vs = VideoStream(usePiCamera=CONFIG['usePiCam'], framerate=1).start()
+vs = VideoStream(usePiCamera=CONFIG['usePiCam']).start()
 
 # allow the camera sensor to warmup
 time.sleep(2)
@@ -60,7 +60,7 @@ while True:
 
   # use VS instead of cv2.VideoCapture
   frame = vs.read()
-  if(frame.empty()):
+  if(frame == None):
     to_node('error', 'frame is empty')
     break
 
