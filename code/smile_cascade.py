@@ -71,7 +71,7 @@ while True:
       gray,
       scaleFactor=1.1,
       minNeighbors=8,
-      minSize=(100, 100),
+      minSize=(55, 55),
       flags=cv2.CASCADE_SCALE_IMAGE
   )
 
@@ -82,9 +82,9 @@ while True:
 
     smile = smileCascade.detectMultiScale(
         roi_gray,
-        scaleFactor=1.8,
-        minNeighbors=25,
-        minSize=(25, 25),
+        scaleFactor=1.2,
+        minNeighbors=10,
+        minSize=(20, 20),
         flags=cv2.CASCADE_SCALE_IMAGE
     )
 
