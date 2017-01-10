@@ -60,11 +60,12 @@ while True:
 
   # use VS instead of cv2.VideoCapture
   frame = vs.read()
-  if(frame == None):
-    to_node('error', 'frame is empty')
-    break
 
-  gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+  try:
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+  except:
+    to_node('error', sys.exc_info()[0])
+    break
 
   faces = faceCascade.detectMultiScale(
       gray,
@@ -75,6 +76,7 @@ while True:
   )
 
   for (x, y, w, h) in faces:
+    cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
     roi_gray = gray[y:y + h, x:x + w]
     roi_color = frame[y:y + h, x:x + w]
 
@@ -94,6 +96,7 @@ while True:
       if smileTime == (CONFIG['smileLength'] / 2):
         cv2.imwrite(log_path + datetime.now().isoformat("T") + '.jpg', frame)
 
+  cv2.imshow('Smile Detector', frame)
   if cv2.waitKey(1) & 0xFF == ord('q'):
     break
 
