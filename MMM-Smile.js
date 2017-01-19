@@ -23,9 +23,11 @@ Module.register('MMM-Smile', {
   start: function() {
     Log.info('Starting module: ' + this.name);
     var self = this
+    this.show(1000, function() {
+      Log.log(this.name + ' is shown.');
+    })
     this.message = 'Starting smile test...'
     this.gifUrl = ''
-    this.clearDom = false
     this.progressBarWidth = 0
     this.getSmileTestResult()
 
@@ -48,7 +50,6 @@ Module.register('MMM-Smile', {
   // Override socket notification handler.
   socketNotificationReceived: function(notification, payload) {
     var self = this
-    var endTest = false
 
     if (notification === "GIF") {
       this.gifUrl = payload
@@ -56,26 +57,25 @@ Module.register('MMM-Smile', {
       this.updateDom()
     } else if (notification === "RESULT") {
       if (payload === -1) {
-        this.message = "Sorry, you didn't pass smile test."
-        endTest = true
+        this.message = "Let's try again"
+        setTimeout(function() {
+          self.start()
+        }, 1000);
       } else {
         if (payload >= 0 && payload < this.config.smileLength) {
           this.message = "Keep smiling~"
         } else {
           this.message = "Smile test passed!"
-          endTest = true
+          setTimeout(function() {
+            self.hide(1000, function() {
+              Log.log(self.name + ' is hidden.');
+            })
+          }, 1000);
         }
 
         this.progressBarWidth = Math.round(100 * payload / this.config.smileLength).toString() + "%";
       }
       this.updateDom()
-    }
-
-    if (endTest) {
-      setTimeout(function() {
-        self.clearDom = true;
-        self.updateDom()
-      }, 1000);
     }
   },
 
@@ -102,12 +102,6 @@ Module.register('MMM-Smile', {
     progressBar.id = "progress-bar"
     progressBar.style.width = this.progressBarWidth
     wrapper.appendChild(progressBar)
-
-    if (this.clearDom) {
-      while (wrapper.firstChild) {
-        wrapper.removeChild(wrapper.firstChild);
-      }
-    }
 
     return wrapper;
   }
