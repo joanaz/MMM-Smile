@@ -4,21 +4,23 @@
   "description": "Smile Test for the Magic Mirror.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/paviro/MMM-Facial-Recognition"
+    "url": "git+https://github.com/joanaz/MMM-Smile"
   },
   "keywords": [
     "magic mirror",
     "smart mirror",
-    "Facial expression recognition",
-    "module"
+    "module",
+    "magic mirror module",
+    "facial expression recognition",
+    "smile detection"
   ],
-  "author": "Paul-Vincent Roll",
-  "contributors": "https://github.com/paviro/MMM-Facial-Recognition/graphs/contributors",
+  "author": "Joanna Zhang",
+  "contributors": "https://github.com/joanaz/MMM-Smile/graphs/contributors",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/paviro/MMM-Facial-Recognition/issues"
+    "url": "https://github.com/joanaz/MMM-Smile/issues"
   },
-  "homepage": "https://github.com/paviro/MMM-Facial-Recognition#readme",
+  "homepage": "https://github.com/joanaz/MMM-Smile#readme",
   "dependencies": {
     "python-shell": "latest"
   }

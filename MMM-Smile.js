@@ -12,12 +12,12 @@ Module.register('MMM-Smile', {
   defaults: {
     // recognition interval in ms, default to 8 hours
     interval: 8 * 60 * 60 * 1000,
+    // test running time in seconds
+    testRunTime: 60,
     // smile time in seconds
     smileLength: 5,
     // use pi camera by default
-    usePiCam: true,
-    // test running time in seconds
-    testRunTime: 60
+    usePiCam: true
   },
 
   start: function() {
@@ -91,10 +91,6 @@ Module.register('MMM-Smile', {
     if (this.gitUrl != '') {
       var img = document.createElement("img");
       img.src = this.gifUrl
-
-      // image.width = this.config.imageSize.toString();
-      // image.height = this.config.imageSize.toString();
-
       wrapper.appendChild(img);
     }
 

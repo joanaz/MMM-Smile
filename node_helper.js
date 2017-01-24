@@ -2,7 +2,6 @@
 const NodeHelper = require('node_helper');
 const request = require('request');
 const PythonShell = require('python-shell');
-// this.pythonStarted = false
 
 module.exports = NodeHelper.create({
 
