@@ -8,7 +8,7 @@ Reference: [REAL-TIME SMILE DETECTION IN PYTHON OPENCV](http://pushbuttons.io/bl
 
 The entry in config.js can look like the following. (NOTE: You only have to add the variables to config if you want to change its standard value.)
 
-```JSON
+```Javascript
 {
 	module: 'MMM-Smile',
     position: "middle_center",
