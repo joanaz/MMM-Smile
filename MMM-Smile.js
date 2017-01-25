@@ -45,6 +45,7 @@ Module.register('MMM-Smile', {
 
     this.pythonStarted = false
     this.sendSocketNotification('START_TEST', this.config);
+    this.message = "Time to smile~";
   },
 
   // Override socket notification handler.
@@ -53,7 +54,6 @@ Module.register('MMM-Smile', {
 
     if (notification === "GIF") {
       this.gifUrl = payload
-      this.message = "Time to smile~";
       this.updateDom()
     } else if (notification === "RESULT") {
       if (payload === -1) {
@@ -65,12 +65,14 @@ Module.register('MMM-Smile', {
         if (payload >= 0 && payload < this.config.smileLength) {
           this.message = "Keep smiling~"
         } else {
-          this.message = "Smile test passed!"
+          this.sendSocketNotification('PASSED_TEST');
+          this.message = "Great job!"
+
           setTimeout(function() {
             self.hide(1000, function() {
               Log.log(self.name + ' is hidden.');
             })
-          }, 1000);
+          }, 5000);
         }
 
         this.progressBarWidth = Math.round(100 * payload / this.config.smileLength).toString() + "%";

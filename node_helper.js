@@ -20,15 +20,7 @@ module.exports = NodeHelper.create({
         var randomIndex = Math.floor(Math.random() * animals.length)
         var randomAnimal = animals[randomIndex]
 
-        var giphyApiUrl = "http://api.giphy.com/v1/gifs/search?q=" + randomAnimal + "&api_key=dc6zaTOxFJmzC"
-
-        request.get(giphyApiUrl, function(error, response, body) {
-          if (!error && response.statusCode == 200) {
-            var gifUrl = JSON.parse(body).data[0].images.fixed_height.url
-
-            self.sendSocketNotification("GIF", gifUrl);
-          }
-        })
+        self.sendGIF(randomAnimal)
 
       } else if (message.hasOwnProperty('result')) {
         console.log("[" + self.name + "] " + (message.result));
@@ -56,11 +48,26 @@ module.exports = NodeHelper.create({
     });
   },
 
+  sendGIF: function(searchTerm) {
+    var self = this
+    var giphyApiUrl = "http://api.giphy.com/v1/gifs/search?q=" + searchTerm + "&api_key=dc6zaTOxFJmzC"
+
+    request.get(giphyApiUrl, function(error, response, body) {
+      if (!error && response.statusCode == 200) {
+        var gifUrl = JSON.parse(body).data[0].images.fixed_height.url
+
+        self.sendSocketNotification("GIF", gifUrl);
+      }
+    })
+  },
+
   // Subclass socketNotificationReceived received.
   socketNotificationReceived: function(notification, payload) {
     if (notification === 'START_TEST') {
       this.config = payload
       this.python_start();
+    } else if (notification == "PASSED_TEST") {
+      this.sendGIF("clapping")
     }
   }
 });
